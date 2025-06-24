@@ -1,0 +1,22 @@
+# Ambientes virtuais
+venv/
+.env/
+extra/
+testes_loop/
+
+# Compilados Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+
+# Arquivos temporários
+*.log
+*.tmp
+.DS_Store
