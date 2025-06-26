@@ -277,8 +277,7 @@ def decode(code_symbols, n_i_vect, m):
 
     while index_code_symbol_iterator <= len(code_symbols):
         current_symbol = code_symbols[index_code_symbol_iterator]
-        code_symbols_unprocessed.append(current_symbol)
-               
+        code_symbols_unprocessed.append(current_symbol)    
         code_interval = find_code_interval_from_candidates(cc_list, code_symbols_unprocessed)
         index_code_interval_symbol_iterator = index_code_symbol_iterator + 1
         n_future = n
@@ -311,7 +310,6 @@ def decode(code_symbols, n_i_vect, m):
 
                 checksrc_interval = copy.copy(src_interval)
                 checkcode = check_for_output_and_rescale(checksrc_interval, cc_list, n_i)
-                
                 if checksrc_interval.lowerBound != src_interval.lowerBound or checksrc_interval.upperBound != src_interval.upperBound:
                     index_code_symbol_iterator = index_code_symbol_iterator + len(checkcode)
                     src_interval = checksrc_interval
@@ -320,7 +318,6 @@ def decode(code_symbols, n_i_vect, m):
             
             if index_code_interval_symbol_iterator >= len(code_symbols):
                 code_interval.upperBound = np.uint32(code_interval.lowerBound + (np.uint64(code_interval.upperBound - code_interval.lowerBound) * 0.5))
-                
             else:
                 code_interval_symbol = code_symbols[index_code_interval_symbol_iterator]
                 buffer = SourceInterval()
