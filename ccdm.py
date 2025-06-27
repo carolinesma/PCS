@@ -250,9 +250,9 @@ def decode(code_symbols, n_i_vect, m):
     """
     n = len(code_symbols)
     k = len(n_i_vect)
-    n_i = [0] * k
-    n_i_future = [0] * k
-    n_i_future[:] = n_i_vect[:]
+    n_i = [0] * k # n_i = n_i_vect.copy() #remover
+    n_i_future = [0] * k #remover
+    n_i_future[:] = n_i_vect[:] # n_i_future = n_i_vect.copy() #remover
     n_future = n
     
     sum_n_i = np.uint32(0)
@@ -262,7 +262,7 @@ def decode(code_symbols, n_i_vect, m):
     code_interval = SourceInterval()
     cc_list = CodeCandidateList(k)
 
-    for i in range(0, k):
+    for i in range(0, k): #remover
         n_i[i] = n_i_vect[i]
     
     n_i[k-1] = n_i_vect[k-1]
@@ -277,11 +277,11 @@ def decode(code_symbols, n_i_vect, m):
 
     while index_code_symbol_iterator <= len(code_symbols):
         current_symbol = code_symbols[index_code_symbol_iterator]
-        code_symbols_unprocessed.append(current_symbol)    
+        code_symbols_unprocessed.append(current_symbol)    #poderia enviar o current symbol?
         code_interval = find_code_interval_from_candidates(cc_list, code_symbols_unprocessed)
         index_code_interval_symbol_iterator = index_code_symbol_iterator + 1
         n_future = n
-        for i in range(0, k):
+        for i in range(0, k): #verificar a necessidade de sse trecho
             n_i_future[i] = n_i[i]
         
         if n_i_future[current_symbol - 1] > 0:
