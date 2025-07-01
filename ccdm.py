@@ -308,7 +308,7 @@ def decode(code_symbols, n_i_vect, m):
 
                 new_border = np.uint32(src_interval.lowerBound + (np.uint32(src_interval.upperBound - src_interval.lowerBound) * 0.5))
 
-                checksrc_interval = copy.copy(src_interval)
+                checksrc_interval = copy.deepcopy(src_interval)
                 checkcode = check_for_output_and_rescale(checksrc_interval, cc_list, n_i)
                 if checksrc_interval.lowerBound != src_interval.lowerBound or checksrc_interval.upperBound != src_interval.upperBound:
                     index_code_symbol_iterator = index_code_symbol_iterator + len(checkcode)
