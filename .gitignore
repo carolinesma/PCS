@@ -3,6 +3,7 @@ venv/
 .env/
 extra/
 testes_loop/
+old/
 
 # Compilados Python
 __pycache__/
