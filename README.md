@@ -1,2 +1,2 @@
 # PCS
-Estudo de algoritmos para formataćão probabilística de cosntelaćões (PCS)
+Algoritmos para formatação probabilística de constelações (PCS)

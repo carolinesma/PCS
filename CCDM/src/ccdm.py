@@ -108,7 +108,6 @@ def update_code_candidates(cc_list, n_i):
     Recomputes the list of code candidates based on the current symbol frequencies.
     """
     cc_list.list.clear()
-    n = 0
     sum_n_i = np.uint32(0)
     sum_p_i = np.uint32(0)
     n = np.uint32(sum(n_i))
@@ -205,17 +204,12 @@ def encode(src_symbols, n_i_vect):
         Encoded symbol sequence.
     """
     k = len(n_i_vect)    
-    n_i = [0] * k
     psrc = np.array([0.5, 0.5])
     code_symbols = []
 
     src_interval = SourceInterval(np.uint32(0), np.uint32(1<<31))
     cc_list = CodeCandidateList(k)
-
-    for i in range(0, k):
-      n_i[i] =n_i_vect[i]
-	
-    n_i[k-1] = n_i_vect[k-1]
+    n_i = copy.copy(n_i_vect)
 
     update_code_candidates(cc_list, n_i)
     
@@ -250,22 +244,18 @@ def decode(code_symbols, n_i_vect, m):
     """
     n = len(code_symbols)
     k = len(n_i_vect)
-    n_i = [0] * k # n_i = n_i_vect.copy() #remover
-    n_i_future = [0] * k #remover
-    n_i_future[:] = n_i_vect[:] # n_i_future = n_i_vect.copy() #remover
+    psrc = np.array([0.5, 0.5])
     n_future = n
-    
     sum_n_i = np.uint32(0)
     new_border = np.uint32(0)
     
+    n_i = copy.copy(n_i_vect)
+    n_i_future = copy.copy(n_i_vect)
+
     src_interval = SourceInterval(np.uint32(0), np.uint32(1<<31))
     code_interval = SourceInterval()
     cc_list = CodeCandidateList(k)
 
-    for i in range(0, k): #remover
-        n_i[i] = n_i_vect[i]
-    
-    n_i[k-1] = n_i_vect[k-1]
     update_code_candidates(cc_list, n_i)
 
     src_symbols = [0] * m
@@ -277,12 +267,12 @@ def decode(code_symbols, n_i_vect, m):
 
     while index_code_symbol_iterator <= len(code_symbols):
         current_symbol = code_symbols[index_code_symbol_iterator]
-        code_symbols_unprocessed.append(current_symbol)    #poderia enviar o current symbol?
+        code_symbols_unprocessed.append(current_symbol)
         code_interval = find_code_interval_from_candidates(cc_list, code_symbols_unprocessed)
         index_code_interval_symbol_iterator = index_code_symbol_iterator + 1
         n_future = n
-        for i in range(0, k): #verificar a necessidade de sse trecho
-            n_i_future[i] = n_i[i]
+
+        n_i_future = copy.copy(n_i)
         
         if n_i_future[current_symbol - 1] > 0:
             n_i_future[current_symbol - 1] -= 1
@@ -290,7 +280,7 @@ def decode(code_symbols, n_i_vect, m):
 
         scaling_performed = False
         while not scaling_performed:
-            new_border = np.uint32(src_interval.lowerBound + (np.uint32(src_interval.upperBound - src_interval.lowerBound) * 0.5))
+            new_border = np.uint32(src_interval.lowerBound + (np.uint32(src_interval.upperBound - src_interval.lowerBound) * psrc[0]))
             
             while code_interval.lowerBound >= new_border or code_interval.upperBound < new_border:
                 if code_interval.lowerBound >= new_border:
@@ -306,7 +296,7 @@ def decode(code_symbols, n_i_vect, m):
                 if src_symbol_index >= m:
                     return src_symbols
 
-                new_border = np.uint32(src_interval.lowerBound + (np.uint32(src_interval.upperBound - src_interval.lowerBound) * 0.5))
+                new_border = np.uint32(src_interval.lowerBound + (np.uint32(src_interval.upperBound - src_interval.lowerBound) * psrc[0]))
 
                 checksrc_interval = copy.deepcopy(src_interval)
                 checkcode = check_for_output_and_rescale(checksrc_interval, cc_list, n_i)
@@ -317,7 +307,7 @@ def decode(code_symbols, n_i_vect, m):
                     break
             
             if index_code_interval_symbol_iterator >= len(code_symbols):
-                code_interval.upperBound = np.uint32(code_interval.lowerBound + (np.uint64(code_interval.upperBound - code_interval.lowerBound) * 0.5))
+                code_interval.upperBound = np.uint32(code_interval.lowerBound + (np.uint64(code_interval.upperBound - code_interval.lowerBound) * psrc[0]))
             else:
                 code_interval_symbol = code_symbols[index_code_interval_symbol_iterator]
                 buffer = SourceInterval()

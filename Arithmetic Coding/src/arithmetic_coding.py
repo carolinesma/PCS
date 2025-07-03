@@ -1,8 +1,8 @@
 import numpy as np
 import numpy as np
-import itertools
 import copy
 from typing import List
+from utils import show_results
 
 class CodeCandidate:
     """
@@ -198,3 +198,116 @@ def matching_canditade_intervals_finalize(source_interval, code_interval_list, P
             fin_intervals[cc.probability] = cc.symbols
     fin_symbols = fin_intervals[max(fin_intervals)]
     return fin_symbols
+
+def encode(sequence, P_code, P_source):
+    """Codifica uma sequência usando codificação aritmética"""
+
+    code_intervals = cumulative_prob(P_code)
+    code_interval_list = CodeCandidateList(len(code_intervals))
+    for cc in code_intervals:
+        code_interval_list.list.append(CodeCandidate(lowerBound=code_intervals[cc][0], 
+                                                     upperBound=code_intervals[cc][1], 
+                                                     probability=code_intervals[cc][1]-code_intervals[cc][0], 
+                                                     symbols=[cc]))
+    
+    source_interval = Interval(0.0, 1.0)
+    code_symbols = []
+
+    for symbol in sequence:
+        print("\nSímbolo Atual", symbol)
+        new_border = source_interval.lowerBound + (source_interval.upperBound - source_interval.lowerBound) * P_source[0]
+        if symbol == 0:
+            source_interval.upperBound = new_border
+        else:
+            source_interval.lowerBound = new_border
+
+        
+        new_code_symbols, source_interval, code_interval_list = output_and_rescale(source_interval, code_interval_list, P_code)
+        if new_code_symbols:
+            code_symbols.extend(new_code_symbols)
+            
+            
+    fin_intervals = matching_canditade_intervals_finalize(source_interval, code_interval_list, P_code)
+    
+    code_symbols.extend(fin_intervals)
+    
+    return code_symbols
+
+def decode(sequence_code, P_source, P_code, len_original_sequence):
+    """Decodifica uma sequência usando codificação aritmética"""
+    
+    code_intervals = cumulative_prob(P_code)
+    code_interval_list = CodeCandidateList(len(code_intervals))
+    for cc in code_intervals:
+        code_interval_list.list.append(CodeCandidate(lowerBound=code_intervals[cc][0], 
+                                                     upperBound=code_intervals[cc][1], 
+                                                     probability=code_intervals[cc][1]-code_intervals[cc][0], 
+                                                     symbols=[cc]))
+    len_sequence = len(sequence_code)
+    sequence_decoded = []
+    source_interval = Interval(0.0, 1.0)
+    
+    symbol_point_decoder_iterator = 0
+    symbol_point_iterator = 0
+    current_symbol = []
+    while symbol_point_decoder_iterator <= len_sequence:
+        #code_intervals_copy = copy.copy(code_interval_list)
+        current_symbol.append(sequence_code[symbol_point_decoder_iterator])
+        code_interval = find_code_interval_from_candidates(code_interval_list, current_symbol)
+        symbol_point_iterator = symbol_point_decoder_iterator + 1
+        
+        ##
+        show_results(sequence_code[symbol_point_decoder_iterator], code_interval, source_interval)
+        ##
+        
+        search = True
+        while search:
+            new_border = source_interval.lowerBound + (source_interval.upperBound - source_interval.lowerBound) * P_source[0]
+            while code_interval.lowerBound >= new_border or code_interval.upperBound < new_border:
+                if code_interval.lowerBound >= new_border:
+                    sequence_decoded.append(1)
+                    source_interval.lowerBound = new_border
+                elif code_interval.upperBound < new_border:
+                    source_interval.upperBound = new_border
+                    sequence_decoded.append(0)
+
+                if len(sequence_decoded) >= len_original_sequence:
+                    return sequence_decoded
+                
+                new_border = source_interval.lowerBound + (source_interval.upperBound - source_interval.lowerBound) * P_source[0]
+                
+                #----------------------------------------------------------
+                k_interval = copy.deepcopy(source_interval)
+                code_interval_list_copy = copy.deepcopy(code_interval_list)
+                print("\n-------------------------")
+                print("Simulação do Encoder")
+                checkcode, k_interval, _ = output_and_rescale(k_interval, code_interval_list_copy, P_code)
+                print("-------------------------")
+                if k_interval.lowerBound != source_interval.lowerBound or k_interval.upperBound != source_interval.upperBound:
+                    symbol_point_decoder_iterator = symbol_point_decoder_iterator + len(checkcode)
+                    source_interval = k_interval
+                    search = False
+                    break
+                
+            if symbol_point_iterator >= len_sequence:
+                code_interval.upperBound = code_interval.lowerBound + (code_interval.upperBound - code_interval.lowerBound) * P_source[0]
+            
+            else:
+                probability = P_code[0]
+                symbol = sequence_code[symbol_point_iterator]
+                
+                if symbol == 0:                  
+                    range_ = code_interval.upperBound - code_interval.lowerBound
+                    newMidBound = code_interval.lowerBound + range_ * probability
+                    code_interval.upperBound = newMidBound           
+                    
+                else:
+                    range_ = code_interval.upperBound - code_interval.lowerBound
+                    newMidBound = code_interval.lowerBound + range_ * probability
+                    code_interval.lowerBound = newMidBound 
+                    
+                show_results(symbol, code_interval, source_interval)
+            symbol_point_iterator += 1             
+        
+
+    return sequence_decoded
