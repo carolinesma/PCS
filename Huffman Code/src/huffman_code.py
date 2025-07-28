@@ -1,15 +1,16 @@
 from utils import OrderedQueue, Node
+import warnings
 
 class HuffmanTree:
-    def __init__(self, symbols, frequencies):
-        self.root = self._build_tree(symbols, frequencies)
+    def __init__(self, symbols, distribution):
+        self.root = self._build_tree(symbols, distribution)
         self.codebook = []
         self._inverse_codebook = None
         self._generate_codes(self.root, "")
         
-    def _build_tree(self, symbols, frequencies):
+    def _build_tree(self, symbols, distribution):
         queue = OrderedQueue()
-        for symbol, freq in zip(symbols, frequencies):
+        for symbol, freq in zip(symbols, distribution):
             queue.insert_sorted(Node(freq, symbol))
 
         while len(queue) >= 2:
@@ -35,50 +36,37 @@ class HuffmanTree:
 
     def get_codebook(self):
         return self.codebook
-    
-    def get_inverse_codebook(self):
-        if self._inverse_codebook is None:
-            self._inverse_codebook = {node.code: node.symbol for node in self.codebook}
-        return self._inverse_codebook
-    
-    def decode(self, bitstream):
-        decoded_symbols = []
+        
+    def encode(self, bitstream):
+        encoded_symbols = []
         node = self.root
 
         for bit in bitstream:
-            if bit == '1':
+            if bit == 1:
                 node = node.left
-            elif bit == '0':
+            elif bit == 0:
                 node = node.right
             else:
                 raise ValueError(f"Invalid bit: {bit}")
 
             if node.is_leaf():
-                decoded_symbols.append(node.symbol)
+                encoded_symbols.append(node.symbol)
                 node = self.root
 
-        return decoded_symbols
-
-    def decode_with_codebook(self, bitstream):
-        inverse_codebook = self.get_inverse_codebook()
-        decoded = []
-        buffer = ""
-
-        for bit in bitstream:
-            buffer += bit
-            if buffer in inverse_codebook:
-                decoded.append(inverse_codebook[buffer])
-                buffer = ""
-
-        if buffer != "":
-            raise ValueError(f"Invalid bitstream: unrecognized suffix '{buffer}' remaining after decoding")
-
-        return decoded
+        return encoded_symbols
     
+    def print_codebook(self, codebook=None):
+        if codebook is None:
+            codebook = self.codebook
+        codebook.sort(key=lambda node: node.symbol)
+        for c in codebook:
+            print(f"{c.symbol} | {c.frequency:.5f} | {c.code}")
+
     def is_prefix_free(self, codebook):
         codes = [entry.code for entry in codebook]
         for i, code1 in enumerate(codes):
             for j, code2 in enumerate(codes):
                 if i != j and code2.startswith(code1):
+                    warnings.warn(f"The code '{code1}' is a prefix of '{code2}', so it is not prefix-free.")
                     return False, code1, code2
         return True, None, None
