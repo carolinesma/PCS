@@ -2,31 +2,31 @@ import numpy as np # type: ignore
 from utils import OrderedQueue, Node
 
 class GeometricHuffmanCode:
-    def __init__(self, frequencies):
-        self.cut_tree = np.zeros(len(frequencies), dtype=bool)
-        self.root = self._build_tree(frequencies)
+    def __init__(self, symbols, distribution):
+        self.cut_tree = np.zeros(len(distribution), dtype=bool)
+        self.root = self._build_tree(symbols, distribution)
         self.codebook = []
         self.dyadic_distribution = []
         self._generate_codes(self.root, "")
         self._generate_distribution()
 
-    def _build_tree(self, frequencies):
+    def _build_tree(self, symbols, distribution):
         queue = OrderedQueue()
-        for symbol, freq in enumerate(frequencies):
+        for symbol, freq in zip(symbols, distribution):
             queue.insert_sorted(Node(freq, symbol))
 
         for k in range(len(queue)-1):   
-            left = queue.pop()
-            right = queue.pop()
+            x_m = queue.pop()
+            x_m1 = queue.pop()
             
-            if 2 * np.sqrt(left.frequency * right.frequency) <= right.frequency:
-                queue.push_front(right)
+            if 2 * np.sqrt(x_m.frequency * x_m1.frequency) <= x_m1.frequency:
+                queue.push_front(x_m1)
                 self.cut_tree[k] = True
             else:
-                merged = Node(2 * np.sqrt(left.frequency * right.frequency), 0)
-                merged.left = left
-                merged.right = right
-                queue.push_front(merged)
+                merged = Node(2 * np.sqrt(x_m.frequency * x_m1.frequency), 0)
+                merged.left = x_m
+                merged.right = x_m1
+                queue.insert_sorted(merged)
         
         return queue.pop()
     
@@ -39,8 +39,8 @@ class GeometricHuffmanCode:
             node.frequency = pow(2,-node.L)
             self.codebook.append(node)
         else:
-            self._generate_codes(node.left, codeword + "1")
-            self._generate_codes(node.right, codeword + "0")
+            self._generate_codes(node.left, codeword + "0")
+            self._generate_codes(node.right, codeword + "1")
 
     def _generate_distribution(self):
         for node in self.codebook:

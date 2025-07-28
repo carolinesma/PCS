@@ -3,7 +3,7 @@ from utils import OrderedQueue, Node
 from huffman_code import HuffmanTree
 import copy
 import warnings
-import numpy as np
+import numpy as np # type: ignore
 
 class HuffmanShaping:
     def __init__(self, symbols, distribution, suffixes: List[str] = None):
