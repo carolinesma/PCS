@@ -73,3 +73,24 @@ def shaping_gain(R_h, E_h):
     E_h: energia média do código
     """
     return ((2**(2*R_h)) - 1) / (3 * E_h)
+
+def kl_divergence(p, q):
+
+    """ 
+    Calcula a divergência de Kullback-Leibler entre duas distribuições.
+        Equação: D_KL(p || q) = Σ p_i * log2(p_i / q_i)
+    Parâmetros:
+    p : np.array
+        Distribuição de probabilidade original.
+    q : np.array
+        Distribuição de probabilidade aproximada.
+    Retorna:
+    float
+        Divergência de Kullback-Leibler entre p e q.
+    """
+       
+    p = np.asarray(p, dtype=np.float64)
+    q = np.asarray(q, dtype=np.float64)
+ 
+    mask = (p > 0) & (q > 0)
+    return np.sum(p[mask] * np.log2(p[mask] / q[mask]))
