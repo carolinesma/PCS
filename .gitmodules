@@ -1,0 +1,3 @@
+[submodule "Huffman_DM"]
+	path = Huffman_DM
+	url = git@github.com:andrademicael/Huffman_DM.git
