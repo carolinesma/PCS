@@ -1,5 +1,5 @@
 import numpy as np # type: ignore
-from utils import OrderedQueue, Node
+from .utils import OrderedQueue, Node
 
 class GeometricHuffmanCode:
     def __init__(self, symbols, distribution):

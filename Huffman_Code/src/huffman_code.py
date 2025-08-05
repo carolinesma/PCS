@@ -1,4 +1,4 @@
-from utils import OrderedQueue, Node
+from .utils import OrderedQueue, Node
 import warnings
 
 class HuffmanTree:

@@ -1,6 +1,6 @@
 from typing import Dict, Optional, List, Tuple
-from utils import OrderedQueue, Node
-from huffman_code import HuffmanTree
+from .utils import OrderedQueue, Node
+from .huffman_code import HuffmanTree
 import copy
 import warnings
 import numpy as np # type: ignore
