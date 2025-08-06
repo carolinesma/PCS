@@ -3,7 +3,7 @@ from .utils import OrderedQueue, Node
 
 class GeometricHuffmanCode:
     def __init__(self, symbols, distribution):
-        self.cut_tree = np.zeros(len(distribution), dtype=bool)
+        self.cut_tree = np.zeros(len(distribution)-1, dtype=bool)
         self.root = self._build_tree(symbols, distribution)
         self.codebook = []
         self.dyadic_distribution = []
@@ -43,9 +43,11 @@ class GeometricHuffmanCode:
             self._generate_codes(node.right, codeword + "1")
 
     def _generate_distribution(self):
+        self.codebook.sort(key=lambda node: node.symbol, reverse=True)
         for node in self.codebook:
             self.dyadic_distribution.append(node.frequency)
         if np.any(self.cut_tree):
-            indices = np.where(self.cut_tree)[0]
-            for idx in sorted(indices, reverse=True):
-                self.dyadic_distribution.insert(idx, 0)
+            count =  len(self.cut_tree) + 1 - len(self.dyadic_distribution)
+            zeros_end = count // 2
+            zeros_start = count - zeros_end
+            self.dyadic_distribution = [0]*zeros_start + self.dyadic_distribution + [0]*zeros_end
