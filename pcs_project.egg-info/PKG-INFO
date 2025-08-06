@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: pcs-project
-Version: 0.1.0
-Summary: PCS project
-Author-email: Caroline <sma.caroline@ymail.com>
-Requires-Dist: numpy
-Requires-Dist: scipy
-Requires-Dist: matplotlib
-Requires-Dist: treelib
