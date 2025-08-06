@@ -21,3 +21,7 @@ __pycache__/
 *.log
 *.tmp
 .DS_Store
+
+# Arquivos/pastas gerados por setuptools
+*.egg-info/
+
