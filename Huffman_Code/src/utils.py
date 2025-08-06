@@ -8,7 +8,7 @@ class Node:
         self.L = 0
 
     def __lt__(self, other):
-        return self.frequency < other.frequency
+        return self.frequency <= other.frequency
 
     def __eq__(self, other):
         if isinstance(other, Node):
@@ -32,7 +32,7 @@ class OrderedQueue:
 
     def insert_sorted(self, node):
         for i in range(len(self.nodes)):
-            if self.nodes[i] > node:
+            if node < self.nodes[i]:
                 self.nodes.insert(i, node)
                 return
         self.nodes.append(node)

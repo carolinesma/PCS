@@ -24,7 +24,12 @@ class HuffmanShaping:
         
         for node in base_codebook:
             for i, suffix in enumerate(self.suffixes):
-                new_symbol = node.symbol + i * N
+                if len(self.suffixes) > 2: #if QAM
+                    new_symbol = node.symbol + i * N
+                else: #if PAM
+                    if i == 0 or i%2 == 0:
+                        new_symbol = node.symbol
+                    else: new_symbol = -node.symbol
                 new_node = copy.deepcopy(node)
                 new_node.symbol = new_symbol
                 new_node.code = node.code + suffix
@@ -68,6 +73,6 @@ class HuffmanShaping:
         return self.huffman_tree.is_prefix_free(self.expanded_codebook)
     
     def get_output_distribution(self):
-        N = len(self.huffman_tree.get_codebook())
-        first_quadrant_frequencies = [node.frequency for node in self.expanded_codebook[:N]]
-        return np.array(first_quadrant_frequencies)
+        self.expanded_codebook.sort(key=lambda node: node.symbol)
+        distribution = [node.frequency for node in self.expanded_codebook]
+        return np.array(distribution)
