@@ -73,3 +73,13 @@ def plot_kl_vs_constellation_size(results, title_prefix=''):
     plt.legend()
     plt.tight_layout()
     plt.show()
+
+def constellation_variance(symbols, probs=None):
+    symbols = np.array(symbols, dtype=float)
+    if probs is None:  # equiprovável
+        probs = np.ones(len(symbols)) / len(symbols)
+    else:
+        probs = np.array(probs, dtype=float)
+
+    variance = np.sum(probs * np.abs(symbols)**2)
+    return variance
