@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Huffman_Code import HuffmanShaping, GeometricHuffmanCode
+from Huffman_Code import HuffmanShaping, GeometricHuffmanCode, kl_divergence
 from HuffmanMatching.utils import GaussHermiteModulation, RandomWalkModulation, DiscretisedGaussianModulation
 from HuffmanMatching import HuffmanTree
 from scipy.stats import entropy
