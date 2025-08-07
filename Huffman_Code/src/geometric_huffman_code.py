@@ -19,7 +19,8 @@ class GeometricHuffmanCode:
             x_m = queue.pop()
             x_m1 = queue.pop()
             
-            if 2 * np.sqrt(x_m.frequency * x_m1.frequency) <= x_m1.frequency:
+            #if 2 * np.sqrt(x_m.frequency * x_m1.frequency) <= x_m1.frequency:
+            if 4*x_m.frequency <= x_m1.frequency:
                 queue.push_front(x_m1)
                 self.cut_tree[k] = True
             else:
