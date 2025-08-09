@@ -157,15 +157,15 @@ def plot_kl_vs_constellation_size_two_distributions(results_binomial, results_ga
     plt.figure()
 
     # Distribuição Binomial
-    plt.semilogy(x_bin, y_huff_bin, 'o-', label='Binomial - Huffman Shaping', color='navy')
-    plt.semilogy(x_bin, y_geo_bin, 's--', label='Binomial - Geometric Huffman', color='darkolivegreen')
+    plt.semilogy(x_bin, y_huff_bin, 'o-', ms=4,label='Binomial - HS', color='navy')
+    plt.semilogy(x_bin, y_geo_bin, 'o--', ms=4,label='Binomial - GHC', color='navy')
 
     # Distribuição Gaussian Hermite
-    plt.semilogy(x_gau, y_huff_gau, 'd-', label='Gaussian Hermite - Huffman Shaping', color='mediumorchid')
-    plt.semilogy(x_gau, y_geo_gau, 'x--', label='Gaussian Hermite - Geometric Huffman', color='crimson')
+    plt.semilogy(x_gau, y_huff_gau, 'o-', ms=4,label='Gauss-Hermite - HS', color='darksalmon')
+    plt.semilogy(x_gau, y_geo_gau, 'o--', ms=4,label='Gauss-Hermite - GHC', color='darksalmon')
 
     plt.xlabel('Constellation Size')
-    plt.ylabel('KL Divergence')
+    plt.ylabel('KL-Divergence (bit)')
     plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
@@ -184,12 +184,12 @@ def plot_v_dist_two_distributions(results_binomial, results_gaussian):
     plt.figure()
 
     # Distribuição Binomial
-    plt.semilogy(x_bin, y_huff_bin, 'o-', label='Binomial - Huffman Shaping', color='navy')
-    plt.semilogy(x_bin, y_geo_bin, 's--', label='Binomial - Geometric Huffman', color='darkolivegreen')
+    plt.semilogy(x_bin, y_huff_bin, 'o-', ms=4, label='Binomial - HS', color='navy')
+    plt.semilogy(x_bin, y_geo_bin, 'o--', ms=4, label='Binomial - GHC', color='navy')
 
     # Distribuição Gaussian Hermite
-    plt.semilogy(x_gau, y_huff_gau, 'd-', label='Gaussian Hermite - Huffman Shaping', color='mediumorchid')
-    plt.semilogy(x_gau, y_geo_gau, 'x--', label='Gaussian Hermite - Geometric Huffman', color='crimson')
+    plt.semilogy(x_gau, y_huff_gau, 'o-', ms=4,label='Gauss-Hermite - HS', color='darksalmon')
+    plt.semilogy(x_gau, y_geo_gau, 'o--', ms=4,label='Gauss-Hermite - GHC', color='darksalmon')
 
     plt.xlabel('Constellation Size')
     plt.ylabel('Variational Distance')
