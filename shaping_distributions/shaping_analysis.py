@@ -38,8 +38,7 @@ def generate_shaping_results(start, stop, step, variance=1, modulation_class=Non
         
         p_ghc = GeometricHuffmanCode(s, p).dyadic_distribution
         results_obj.geometric_huffman.append(p_ghc)
-        epsilon = 1e-12
-        kl_div_ghc = entropy(np.array(p, dtype=float), np.array(p_ghc, dtype=float) + epsilon, base=2)
+        kl_div_ghc = entropy(np.array(p_ghc, dtype=float), np.array(p, dtype=float), base=2)
         results_obj.kl_div_geometric_huffman.append(kl_div_ghc)
         results_obj.v_dist_geometric_huffman.append(
             variacional_distance_calculation(p, p_ghc))
@@ -116,15 +115,16 @@ def plot_kl_vs_constellation_size(results, title_prefix=''):
     y_huff = results.kl_div_huffman_shaping
     y_geo = results.kl_div_geometric_huffman
 
-    plt.figure(figsize=(7,4))
-    plt.semilogy(x, y_huff, 'o-', label='Huffman Shaping')
-    plt.semilogy(x, y_geo, 's--', label='Geometric Huffman')
+    plt.figure()
+    plt.semilogy(x, y_huff, 'o-', label='Huffman Shaping', color="navy")
+    plt.semilogy(x, y_geo, 's--', label='Geometric Huffman', color="darkolivegreen")
     plt.xlabel('Constellation Size')
-    plt.ylabel('KL Divergence (log scale)')
-    plt.title(f'KL Divergence for {title_prefix}')
-    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.ylabel('KL Divergence')
+    #plt.title(f'KL Divergence for {title_prefix}')
+    plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
+    plt.savefig(f"kl_div_{title_prefix}.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 def plot_v_dist_constellation_size(results, title_prefix=''):
@@ -132,15 +132,71 @@ def plot_v_dist_constellation_size(results, title_prefix=''):
     y_huff = results.v_dist_huffman_shaping
     y_geo = results.v_dist_geometric_huffman
 
-    plt.figure(figsize=(7,4))
-    plt.semilogy(x, y_huff, 'o-', label='Huffman Shaping')
-    plt.semilogy(x, y_geo, 's--', label='Geometric Huffman')
+    plt.figure()
+    plt.semilogy(x, y_huff, 'o-', label='Huffman Shaping', color="navy")
+    plt.semilogy(x, y_geo, 's--', label='Geometric Huffman', color="darkolivegreen")
     plt.xlabel('Constellation Size')
-    plt.ylabel('Variational Distance (log scale)')
-    plt.title(f'Variational Distance for {title_prefix}')
-    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.ylabel('Variational Distance')
+    #plt.title(f'Variational Distance for {title_prefix}')
+    plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
+    plt.savefig(f"v_dist_{title_prefix}.png", dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+def plot_kl_vs_constellation_size_two_distributions(results_binomial, results_gaussian):
+    x_bin = results_binomial.constellation_size
+    y_huff_bin = results_binomial.kl_div_huffman_shaping
+    y_geo_bin = results_binomial.kl_div_geometric_huffman
+
+    x_gau = results_gaussian.constellation_size
+    y_huff_gau = results_gaussian.kl_div_huffman_shaping
+    y_geo_gau = results_gaussian.kl_div_geometric_huffman
+
+    plt.figure()
+
+    # Distribuição Binomial
+    plt.semilogy(x_bin, y_huff_bin, 'o-', label='Binomial - Huffman Shaping', color='navy')
+    plt.semilogy(x_bin, y_geo_bin, 's--', label='Binomial - Geometric Huffman', color='darkolivegreen')
+
+    # Distribuição Gaussian Hermite
+    plt.semilogy(x_gau, y_huff_gau, 'd-', label='Gaussian Hermite - Huffman Shaping', color='mediumorchid')
+    plt.semilogy(x_gau, y_geo_gau, 'x--', label='Gaussian Hermite - Geometric Huffman', color='crimson')
+
+    plt.xlabel('Constellation Size')
+    plt.ylabel('KL Divergence')
+    plt.grid(True, linestyle='-', alpha=0.6)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("kl_div_two_distributions.png", dpi=300, bbox_inches='tight')
+    plt.show()
+
+def plot_v_dist_two_distributions(results_binomial, results_gaussian):
+    x_bin = results_binomial.constellation_size
+    y_huff_bin = results_binomial.v_dist_huffman_shaping
+    y_geo_bin = results_binomial.v_dist_geometric_huffman
+
+    x_gau = results_gaussian.constellation_size
+    y_huff_gau = results_gaussian.v_dist_huffman_shaping
+    y_geo_gau = results_gaussian.v_dist_geometric_huffman
+
+    plt.figure()
+
+    # Distribuição Binomial
+    plt.semilogy(x_bin, y_huff_bin, 'o-', label='Binomial - Huffman Shaping', color='navy')
+    plt.semilogy(x_bin, y_geo_bin, 's--', label='Binomial - Geometric Huffman', color='darkolivegreen')
+
+    # Distribuição Gaussian Hermite
+    plt.semilogy(x_gau, y_huff_gau, 'd-', label='Gaussian Hermite - Huffman Shaping', color='mediumorchid')
+    plt.semilogy(x_gau, y_geo_gau, 'x--', label='Gaussian Hermite - Geometric Huffman', color='crimson')
+
+    plt.xlabel('Constellation Size')
+    plt.ylabel('Variational Distance')
+    plt.grid(True, linestyle='-', alpha=0.6)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("v_dist_two_distributions.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 def constellation_variance(symbols, probs=None):
