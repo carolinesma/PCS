@@ -15,6 +15,7 @@ class results:
         self.kl_div_geometric_huffman = []
         self.v_dist_huffman_shaping = []
         self.v_dist_geometric_huffman = []
+        self.object = []
 
 def generate_shaping_results(start, stop, step, variance=1, modulation_class=None):
     """
@@ -31,6 +32,7 @@ def generate_shaping_results(start, stop, step, variance=1, modulation_class=Non
         results_obj.distribution.append(p)
         huffman_shaping = HuffmanTree(p, s)
         p_hs = huffman_shaping.true_distribution
+        results_obj.object.append(huffman_shaping)
         results_obj.huffman_shaping.append(p_hs)
         results_obj.kl_div_huffman_shaping.append(huffman_shaping.kl_div)
         results_obj.v_dist_huffman_shaping.append(
@@ -124,7 +126,7 @@ def plot_kl_vs_constellation_size(results, title_prefix=''):
     plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"kl_div_{title_prefix}.png", dpi=300, bbox_inches='tight')
+    plt.savefig(f"figures/kl_div_{title_prefix}.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 def plot_v_dist_constellation_size(results, title_prefix=''):
@@ -141,7 +143,7 @@ def plot_v_dist_constellation_size(results, title_prefix=''):
     plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"v_dist_{title_prefix}.png", dpi=300, bbox_inches='tight')
+    plt.savefig(f"figures/v_dist_{title_prefix}.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -169,7 +171,7 @@ def plot_kl_vs_constellation_size_two_distributions(results_binomial, results_ga
     plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
-    plt.savefig("kl_div_two_distributions.png", dpi=300, bbox_inches='tight')
+    plt.savefig("figures/kl_div_two_distributions_hc.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 def plot_v_dist_two_distributions(results_binomial, results_gaussian):
@@ -196,7 +198,7 @@ def plot_v_dist_two_distributions(results_binomial, results_gaussian):
     plt.grid(True, linestyle='-', alpha=0.6)
     plt.legend()
     plt.tight_layout()
-    plt.savefig("v_dist_two_distributions.png", dpi=300, bbox_inches='tight')
+    plt.savefig("figures/v_dist_two_distributions_hc.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 def constellation_variance(symbols, probs=None):
