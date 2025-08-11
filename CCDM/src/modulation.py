@@ -30,6 +30,22 @@ def generate_qam_constellation(M):
 
         return constellation
 
+def generate_pam_constellation(M):
+        """
+        Generates a Pulse Amplitude Modulation (PAM) constellation.
+
+        Parameters
+        ----------
+        M : int
+            Modulation order (number of symbols).
+
+        Returns
+        -------
+        np.array
+            PAM constellation values (real).
+        """
+        return np.arange(-int(M - 1), int(M - 1) + 1, 2)
+
 def gray_mapping(config, M = None, modulation_type = None):
         """
         Generates Gray-coded constellation for the specified modulation type.
@@ -48,15 +64,11 @@ def gray_mapping(config, M = None, modulation_type = None):
         if M == None:
             M = config["constellation_size"]
         if modulation_type == None:
-            modulation_type = config["modulation_type"]
-
-        if M != 2 and modulation_type == "ook":
-            lgr.warning("OOK supports only 2 symbols. Adjusting modulation order to 2.")
-            M = 2
+            modulation_type = "pam"
 
         bits_per_symbol = int(np.log2(M))
         gray_code = generate_gray_code(bits_per_symbol)
-        constellation = generate_qam_constellation(M)
+        constellation = generate_pam_constellation(M)
 
         constellation = constellation.reshape(M, 1)
         sorted_constellation = np.zeros((M, 2), dtype=complex)
@@ -68,6 +80,9 @@ def gray_mapping(config, M = None, modulation_type = None):
         # sort complex symbols column according to their mapped bit sequence (as integer decimal)
         constellation = sorted_constellation[sorted_constellation[:, 1].real.argsort()]
         constellation = constellation[:, 0]
+
+        if modulation_type in ["pam", "ook"]:
+            constellation = constellation.real
 
         return constellation
 

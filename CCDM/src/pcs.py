@@ -128,16 +128,25 @@ def probabilistic_shaping_encode(bit_sequence, config):
     tuple[np.array, list]
         Modulated signal (IQ symbols) and the index list of symbols.
     """
-    C = config["pcs_IQmap"]
+    #C = config["pcs_IQmap"]
+    C = np.unique(np.abs(config["pcs_IQmap"]))
     n_i = config["pcs_symFreq"]
+    bits_sinal_i = np.random.randint(0, 2, config["pcs_num_symbols"])
+    bits_sinal_q = np.random.randint(0, 2, config["pcs_num_symbols"])
     
-    i_TX = ccdm.encode(bit_sequence, n_i)
-    i_TX_aux = np.array(i_TX) - 1
-    IQ = C[i_TX_aux] 
-    txSyms = i_TX
-    Stx = IQ.T
+    bit_sequence_i, bit_sequence_q = np.array_split(bit_sequence, 2)
 
-    return Stx, txSyms
+    i_TX = ccdm.encode(bit_sequence_i, n_i)
+    q_TX = ccdm.encode(bit_sequence_q, n_i)
+    i_TX_aux = np.array(i_TX) - 1
+    q_TX_aux = np.array(q_TX) - 1
+    I = C[i_TX_aux] * (1 - 2*bits_sinal_i) 
+    Q = C[q_TX_aux] * (1 - 2*bits_sinal_q) * 1j
+    txSyms = {"I": i_TX, "Q": q_TX}
+    IQ = I+Q
+    #Stx = IQ
+
+    return IQ, txSyms
 
 def probabilistic_shaping_config(config):
     """
@@ -151,8 +160,9 @@ def probabilistic_shaping_config(config):
 
     constelattion_unity = modulation.normalize_power(modulation.gray_mapping(config))
     lambda_param = config["lambda_param"]
+    amplitudes = np.unique(np.abs(constelattion_unity))
     # maxwell-boltzman
-    pOpt = np.exp(-lambda_param * np.abs(constelattion_unity) * (np.sqrt(config["constellation_size"]) - 1) / (np.sqrt(2) / 2))
+    pOpt = np.exp(-lambda_param * amplitudes * (np.sqrt(config["constellation_size"]) - 1) / (np.sqrt(2) / 2))
     pOpt /= np.sum(pOpt)
     config["pcs_pOpt"] = pOpt
     config["pcs_IQmap"] = constelattion_unity
