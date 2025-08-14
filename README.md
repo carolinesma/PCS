@@ -1,4 +1,4 @@
-# PCS - Probabilistic Constellation Shaping
+# Huffman Distribution Matching
 
 ## Passo a passo para instalação e uso
 
